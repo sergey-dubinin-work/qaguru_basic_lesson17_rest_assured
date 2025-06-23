@@ -1,5 +1,6 @@
-package in.reqres.tests;
+package in.reqres.tests.tests;
 
+import in.reqres.tests.ReqresInBaseApiTest;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
