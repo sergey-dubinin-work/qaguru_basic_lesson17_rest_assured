@@ -5,6 +5,7 @@ import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -85,4 +86,18 @@ public class SelenoidTests {
         System.out.println("Response total: " + response.path("total"));
         System.out.println("Response browsers.chrome: " + response.path("browsers.chrome"));
     }
+
+    @Test
+    void checkTotalSelenoidBrowsersWithAssertJ() {
+
+        Response response = get("http://localhost:4444/status")
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .extract().response();
+
+        Integer responseBody = response.path("total");
+
+        assertThat(responseBody).isEqualTo(5);
+    }
+
 }

@@ -9,12 +9,14 @@ repositories {
 def jUnitVersion = "5.13.1",
     jUnitPlatformLauncherVersion = "1.13.1",
     restAssuredVersion = "5.5.5",
+    assertJVersion = "4.0.0-M1",
     slf4jVersion = "2.0.17"
 
 dependencies {
     testImplementation(
         "org.junit.jupiter:junit-jupiter-api:$jUnitVersion",
-        "io.rest-assured:rest-assured:$restAssuredVersion"
+        "io.rest-assured:rest-assured:$restAssuredVersion",
+        "org.assertj:assertj-core:$assertJVersion"
     )
     testRuntimeOnly(
         "org.junit.jupiter:junit-jupiter-engine:$jUnitVersion",
