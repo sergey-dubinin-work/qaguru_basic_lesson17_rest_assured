@@ -2,14 +2,14 @@ package com.demoqa.bookStore.tests;
 
 import com.demoqa.bookStore.BookStoreBaseApiTest;
 import com.github.javafaker.Faker;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.*;
+import static spec.RequestSpecifications.requestSpecJsonBody;
+import static spec.ResponseSpecifications.*;
 
 public class BookStoreTests extends BookStoreBaseApiTest {
 
@@ -60,7 +60,7 @@ public class BookStoreTests extends BookStoreBaseApiTest {
         String password = faker.internet().password(19, 20, true, true, true);
 
         Response response = given()
-                .contentType(ContentType.JSON)
+                .spec(requestSpecJsonBody())
                 .body(String.format("""
                         {
                           "userName": "%s",
@@ -73,7 +73,7 @@ public class BookStoreTests extends BookStoreBaseApiTest {
                 .when()
                 .post("/Account/v1/User")
                 .then()
-                .statusCode(HttpStatus.SC_CREATED)
+                .spec(responseSpec201Created())
                 .body("username", equalTo(username))
                 .extract().response();
 
@@ -82,7 +82,7 @@ public class BookStoreTests extends BookStoreBaseApiTest {
         System.out.println(userId);
 
         given()
-                .contentType(ContentType.JSON)
+                .spec(requestSpecJsonBody())
                 .body(String.format("""
                         {
                           "userName": "%s",
@@ -95,11 +95,11 @@ public class BookStoreTests extends BookStoreBaseApiTest {
                 .when()
                 .post("/Account/v1/Authorized")
                 .then()
-                .statusCode(HttpStatus.SC_OK)
+                .spec(responseSpec200Ok())
                 .body("", is(false));
 
         given()
-                .contentType(ContentType.JSON)
+                .spec(requestSpecJsonBody())
                 .body(String.format("""
                         {
                           "userName": "%s",
@@ -112,7 +112,7 @@ public class BookStoreTests extends BookStoreBaseApiTest {
                 .when()
                 .post("/Account/v1/GenerateToken")
                 .then()
-                .statusCode(HttpStatus.SC_OK)
+                .spec(responseSpec200Ok())
                 .body(matchesJsonSchemaInClasspath("jsonSchemas/generateTokenResponseSchema.json"))
                 .body("status", equalTo("Success"))
                 .body("result", equalTo("User authorized successfully."));
