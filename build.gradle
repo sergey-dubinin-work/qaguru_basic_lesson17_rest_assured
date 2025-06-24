@@ -16,7 +16,8 @@ dependencies {
     testImplementation(
         "org.junit.jupiter:junit-jupiter-api:$jUnitVersion",
         "io.rest-assured:rest-assured:$restAssuredVersion",
-        "org.assertj:assertj-core:$assertJVersion"
+        "org.assertj:assertj-core:$assertJVersion",
+        "com.github.javafaker:javafaker:1.0.2"
     )
     testRuntimeOnly(
         "org.junit.jupiter:junit-jupiter-engine:$jUnitVersion",
