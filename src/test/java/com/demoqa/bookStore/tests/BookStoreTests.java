@@ -8,6 +8,7 @@ import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.*;
 
 public class BookStoreTests extends BookStoreBaseApiTest {
@@ -112,6 +113,7 @@ public class BookStoreTests extends BookStoreBaseApiTest {
                 .post("/Account/v1/GenerateToken")
                 .then()
                 .statusCode(HttpStatus.SC_OK)
+                .body(matchesJsonSchemaInClasspath("jsonSchemas/generateTokenResponseSchema.json"))
                 .body("status", equalTo("Success"))
                 .body("result", equalTo("User authorized successfully."));
 

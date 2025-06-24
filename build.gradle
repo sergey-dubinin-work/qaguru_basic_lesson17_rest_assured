@@ -33,6 +33,7 @@ dependencies {
     testImplementation(
         "org.junit.jupiter:junit-jupiter-api:$jUnitVersion",
         "io.rest-assured:rest-assured:$restAssuredVersion",
+        "io.rest-assured:json-schema-validator:$restAssuredVersion",
         "org.assertj:assertj-core:$assertJVersion",
         "io.qameta.allure:allure-rest-assured:$allureVersion",
         "com.github.javafaker:javafaker:1.0.2"
