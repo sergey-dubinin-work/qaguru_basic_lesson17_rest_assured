@@ -1,13 +1,17 @@
 package com.demoqa.bookStore.tests;
 
 import com.demoqa.bookStore.BookStoreBaseApiTest;
+import com.demoqa.bookStore.models.account.RegisterUserResponse;
+import com.demoqa.bookStore.models.account.TokenResponse;
+import com.demoqa.bookStore.models.account.User;
 import com.github.javafaker.Faker;
-import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static spec.RequestSpecifications.requestSpecJsonBody;
 import static spec.ResponseSpecifications.*;
 
@@ -56,67 +60,45 @@ public class BookStoreTests extends BookStoreBaseApiTest {
     @Test
     void registerNewUser() {
 
-        String username = faker.name().username();
-        String password = faker.internet().password(19, 20, true, true, true);
+        User userToRegister = User.builder()
+                .userName(faker.name().username())
+                .password(faker.internet().password(19, 20, true, true, true))
+                .build();
 
-        Response response = given()
+        RegisterUserResponse registeredUser = given()
                 .spec(requestSpecJsonBody())
-                .body(String.format("""
-                        {
-                          "userName": "%s",
-                          "password": "%s"
-                        }
-                        """,
-                        username,
-                        password
-                        ))
+                .body(userToRegister)
                 .when()
                 .post("/Account/v1/User")
                 .then()
                 .spec(responseSpec201Created())
-                .body("username", equalTo(username))
-                .extract().response();
+                .extract().as(RegisterUserResponse.class);
 
-        String userId = response.path("userID").toString();
-
-        System.out.println(userId);
+        assertThat(registeredUser.getUsername()).isEqualTo(userToRegister.getUserName());
 
         given()
                 .spec(requestSpecJsonBody())
-                .body(String.format("""
-                        {
-                          "userName": "%s",
-                          "password": "%s"
-                        }
-                        """,
-                        username,
-                        password
-                ))
+                .body(userToRegister)
                 .when()
                 .post("/Account/v1/Authorized")
                 .then()
                 .spec(responseSpec200Ok())
                 .body("", is(false));
 
-        given()
+        TokenResponse tokenBody =  given()
                 .spec(requestSpecJsonBody())
-                .body(String.format("""
-                        {
-                          "userName": "%s",
-                          "password": "%s"
-                        }
-                        """,
-                        username,
-                        password
-                ))
+                .body(userToRegister)
                 .when()
                 .post("/Account/v1/GenerateToken")
                 .then()
                 .spec(responseSpec200Ok())
                 .body(matchesJsonSchemaInClasspath("jsonSchemas/generateTokenResponseSchema.json"))
-                .body("status", equalTo("Success"))
-                .body("result", equalTo("User authorized successfully."));
+                .extract().as(TokenResponse.class);
 
+        assertAll(
+                () -> assertThat(tokenBody.getStatus()).isEqualTo("Success"),
+                () -> assertThat(tokenBody.getResult()).isEqualTo("User authorized successfully.")
+        );
 
     }
 }
